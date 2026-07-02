@@ -34,7 +34,7 @@ async def query_repo(request: QueryRequest):
         if request.language_filter:
             where_filter = {"language": {"$eq": request.language_filter.lower()}}
 
-        result = query_pipeline(
+        result = await query_pipeline(
             question=request.question,
             repo_id=request.repo_id,
             top_k=request.top_k or 5,

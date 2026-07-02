@@ -7,6 +7,7 @@ Orchestrates the full RAG query flow:
 Replaces: app/core/pipeline.py
 """
 
+import asyncio
 import time
 from typing import Dict, Any
 
@@ -21,7 +22,7 @@ logger = get_logger(__name__)
 settings = get_settings()
 
 
-def query_pipeline(
+async def query_pipeline(
     question: str,
     repo_id: str,
     top_k: int = 5,
@@ -56,8 +57,8 @@ def query_pipeline(
     )
 
     try:
-        # ── Step 1: Retrieve ──────────────────────────────────────────
-        retrieved_chunks = retrieve(
+        # ── Step 1: Retrieve (async fanout — 4 searches in parallel) ────────
+        retrieved_chunks = await retrieve(
             question=question,
             repo_id=repo_id,
             top_k=settings.retriever_top_k,
